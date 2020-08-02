@@ -14,10 +14,16 @@
   #define DEBUG_PRINTLN(x)
 #endif
 
+const byte motorPin = 5;
+const byte throttlePin = 7;
+
 void setup() {
   #ifdef DEBUG
     Serial.begin(115200);
   #endif
+
+  pinMode(motorPin, OUTPUT);
+  digitalWrite(motorPin, LOW);
 }
 
 void loop() {

@@ -21,11 +21,12 @@
 
 const byte motorPin = 5;
 const byte throttlePin = 7;
+const byte optoPin = 4; 
 
 int throttlePosition;
 int zeroThrottle = 310;                                         /*throttle reading when pedal is at 0*/
-int fullThrottle = 430;                                         /*throttle reading when pedal is at 100%, originally 740*/
-double slope = 0.593;                                           /*value converts ADC values to PWM values, scaling variable*/
+int fullThrottle = 410;                                         /*throttle reading when pedal is at 100%, originally 720*/
+double slope = 0.622;                                           /*value converts ADC values to PWM values, scaling variable*/
 int motorDrive;                                                 /*motor PWM value*/
 
 void setup() {
@@ -35,6 +36,8 @@ void setup() {
 
   pinMode(motorPin, OUTPUT);
   digitalWrite(motorPin, LOW);
+  pinMode(optoPin, OUTPUT);                                     /*LED cathode pin on opto-isolator/photo-transistor*/
+  digitalWrite(optoPin, LOW);
 }
 
 void loop() {

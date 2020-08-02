@@ -23,6 +23,10 @@ const byte motorPin = 5;
 const byte throttlePin = 7;
 
 int throttlePosition;
+int zeroThrottle = 310;                                         /*throttle reading when pedal is at 0*/
+int fullThrottle = 430;                                         /*throttle reading when pedal is at 100%, originally 740*/
+double slope = 0.593;                                           /*value converts ADC values to PWM values, scaling variable*/
+int motorDrive;                                                 /*motor PWM value*/
 
 void setup() {
   #ifdef DEBUG
@@ -34,8 +38,27 @@ void setup() {
 }
 
 void loop() {
-  throttlePosition = analogRead(throttlePin);
-  DEBUG_PRINTLN(throttlePosition);
-  delay(100);
-
+  throttlePosition = analogRead(throttlePin);  
+  DEBUG_PRINT(throttlePosition);
+  throttlePosition = throttlePosition - zeroThrottle;           /*offset throttle position to start at 0, at 0 throttle*/
+  if(throttlePosition < 0){                                     /*correct throttle position if it is negative*/
+    throttlePosition = 0;
+  }
+  DEBUG_PRINT("\t");
+  DEBUG_PRINT(throttlePosition);
+  motorDrive = (double)throttlePosition * slope;                /*multiply throttle position by slope to get PWM value*/
+  DEBUG_PRINT("\t");
+  DEBUG_PRINT(motorDrive);
+  if(motorDrive > 255){                                         /*correct motorDrive if it is over 255*/
+    motorDrive = 255;
+  }
+  if(motorDrive < 0){                                           /*correct motorDrive if it is negative*/
+    motorDrive = 0;
+  }
+  DEBUG_PRINT("\t");
+  DEBUG_PRINT(motorDrive);
+  analogWrite(motorPin, motorDrive);                            /*write PWM drive value to motorPin*/
+  DEBUG_PRINT("\t");
+  DEBUG_PRINTLN(motorDrive);
+  delay(1);
 }

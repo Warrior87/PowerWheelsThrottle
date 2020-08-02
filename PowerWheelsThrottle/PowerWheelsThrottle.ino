@@ -2,9 +2,14 @@
 /*Hardware:
  * throttle pot input on analog 7
  * PWM output on pin 5 
+ * 
+ * 308 - no throttle (min 300)
+ * 720 - full throttle (max 750)
+ * 
+ * throttle position at max travel stops can vary
  */
 
-//#define DEBUG
+#define DEBUG
 
 #ifdef DEBUG
   #define DEBUG_PRINT(x)  Serial.print (x)
@@ -17,6 +22,8 @@
 const byte motorPin = 5;
 const byte throttlePin = 7;
 
+int throttlePosition;
+
 void setup() {
   #ifdef DEBUG
     Serial.begin(115200);
@@ -27,6 +34,8 @@ void setup() {
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
+  throttlePosition = analogRead(throttlePin);
+  DEBUG_PRINTLN(throttlePosition);
+  delay(100);
 
 }

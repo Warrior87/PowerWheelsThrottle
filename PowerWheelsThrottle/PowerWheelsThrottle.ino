@@ -21,7 +21,6 @@
 
 const byte motorPin = 5;
 const byte throttlePin = 7;
-const byte optoPin = 4; 
 
 int throttlePosition;
 int zeroThrottle = 310;                                         /*throttle reading when pedal is at 0*/
@@ -36,8 +35,6 @@ void setup() {
 
   pinMode(motorPin, OUTPUT);
   digitalWrite(motorPin, LOW);
-  pinMode(optoPin, OUTPUT);                                     /*LED cathode pin on opto-isolator/photo-transistor*/
-  digitalWrite(optoPin, LOW);
 }
 
 void loop() {

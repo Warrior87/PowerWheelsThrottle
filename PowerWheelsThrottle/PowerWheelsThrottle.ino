@@ -59,7 +59,7 @@ void loop() {
   if(motorDrive < 0){                                           /*correct motorDrive if it is negative*/
     motorDrive = 0;
   }
-  if(motorDrive < motor10 && motorDrive > 1){                   /*correct for 10%. if calculated value is lower than 10% and greater than 1, set to 10%*/
+  if(motorDrive < motor10 && motorDrive > 0){                   /*correct for 10%. if calculated value is lower than 10% and greater than 1, set to 10%*/
     motorDrive = motor10;
   }
   if(motorDrive > motor90){                                     /*correct for 90%. if calculated value is higher than 90%, set to 100%*/
@@ -68,7 +68,5 @@ void loop() {
   DEBUG_PRINT("\t");
   DEBUG_PRINT(motorDrive);
   analogWrite(motorPin, motorDrive);                             /*write PWM drive value to motorPin*/
-  DEBUG_PRINT("\t");
-  DEBUG_PRINTLN(motorDrive);
   delay(1);
 }

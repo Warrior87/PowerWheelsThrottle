@@ -29,8 +29,8 @@ int zeroThrottle = 310;                                         /*throttle readi
 int fullThrottle = 410;                                         /*throttle reading when pedal is at 100%, originally 720*/
 double slope = 0.622;                                           /*value converts ADC values to PWM values, scaling variable*/
 int motorDrive;                                                 /*motor PWM value*/
-int motor10 = 25;                                              /*(10%) min drive value. if calculated value is lower (not 0), set to 10%*/
-int motor90 = 229;                                              /*(90%) max drive value. if calculated value is higher, just set to 100%*/
+int motor10 = 35;                                              /*(10%) min drive value. if calculated value is lower (not 0), set to 10%*/
+int motor90 = 219;                                              /*(90%) max drive value. if calculated value is higher, just set to 100%*/
 
 void setup() {
   #ifdef DEBUG
@@ -59,7 +59,7 @@ void loop() {
   if(motorDrive < 0){                                           /*correct motorDrive if it is negative*/
     motorDrive = 0;
   }
-  if(motorDrive < motor10){                   /*correct for 10%. if calculated value is lower than 10% and greater than 1, set to 10%*/
+  if(motorDrive < motor10 && motorDrive > 0){                   /*correct for 10%. if calculated value is lower than 10% and greater than 1, set to 10%*/
     motorDrive = motor10;
   }
   if(motorDrive > motor90){                                     /*correct for 90%. if calculated value is higher than 90%, set to 100%*/

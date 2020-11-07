@@ -8,7 +8,7 @@
  * 
  * throttle position at max travel stops can vary
  * 
- * gate drive hardware has limitations at 10% and 90% duty cycle
+ * gate drive hardware has limitations at 90% duty cycle
  */
 
 //#define DEBUG
@@ -33,6 +33,7 @@ int newMotorDrive = 0;
 int motor90 = 219;                                              /*(90%) max drive value. if calculated value is higher, just set to 100%*/
 int motorRampMax = 76;                                          /*if below, ramp motor, if above, no ramping*/
 int rampRate = 1;                                               /*value that gets added to motorDrive below 30%*/
+byte increasing = 0;                                            /*1 if increasing, 0 if not increasing*/
 
 void setup() {
   #ifdef DEBUG
@@ -64,20 +65,24 @@ void loop() {
   }
   if(newMotorDrive > motor90){                                     /*correct for 90%. if calculated value is higher than 90%, set to 100%*/
     newMotorDrive = 255;
-  }
-
-  if(motorDrive < motorRampMax){
-    /*if the new motor drive value is below motorRampMax and increasing, it needs to ramp slow*/
-    /*always allow the motor drive to decrease fast*/
-    if(newMotorDrive <= motorDrive){
-      motorDrive = newMotorDrive;
-    }
-    else{
-      motorDrive = motorDrive + rampRate;
-    }
   }  
+  if(newMotorDrive > motorDrive){                                  /*figure out if newMotorDrive is increasing*/
+    increasing = 1;
+  }
+  else{
+    increasing = 0;
+  }
+  /*if the new motor drive value is below motorRampMax and increasing, it needs to ramp slow*/
+  if((motorDrive < motorRampMax) && (increasing == 1)){
+    motorDrive = motorDrive + rampRate;
+    DEBUG_PRINT("\t");
+    DEBUG_PRINTLN("ramp");
+    delay(10);                                                    /*add extra delay to slow ramp up*/
+  }    
+  /*always allow the motor drive to decrease fast*/
+  motorDrive = newMotorDrive;
   DEBUG_PRINT("\t");
-  DEBUG_PRINT(motorDrive);
+  DEBUG_PRINTLN(motorDrive);
   analogWrite(motorPin, motorDrive);                             /*write PWM drive value to motorPin*/
   delay(1);
 }

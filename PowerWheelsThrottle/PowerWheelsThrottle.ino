@@ -29,8 +29,10 @@ int zeroThrottle = 310;                                         /*throttle readi
 int fullThrottle = 410;                                         /*throttle reading when pedal is at 100%, originally 720*/
 double slope = 0.622;                                           /*value converts ADC values to PWM values, scaling variable*/
 int motorDrive;                                                 /*motor PWM value*/
-int motor10 = 35;                                              /*(10%) min drive value. if calculated value is lower (not 0), set to 10%*/
+int newMotorDrive = 0;
 int motor90 = 219;                                              /*(90%) max drive value. if calculated value is higher, just set to 100%*/
+int motorRampMax = 76;                                          /*if below, ramp motor, if above, no ramping*/
+int rampRate = 1;                                               /*value that gets added to motorDrive below 30%*/
 
 void setup() {
   #ifdef DEBUG
@@ -51,21 +53,29 @@ void loop() {
   }
   DEBUG_PRINT("\t");
   DEBUG_PRINT(throttlePosition);
-  motorDrive = (double)throttlePosition * slope;                /*multiply throttle position by slope to get PWM value*/
+  newMotorDrive = (double)throttlePosition * slope;                /*multiply throttle position by slope to get PWM value*/
   DEBUG_PRINT("\t");
-  DEBUG_PRINT(motorDrive);
-  if(motorDrive > 255){                                         /*correct motorDrive if it is over 255*/
-    motorDrive = 255;
+  DEBUG_PRINT(newMotorDrive);
+  if(newMotorDrive > 255){                                         /*correct motorDrive if it is over 255*/
+    newMotorDrive = 255;
   }
-  if(motorDrive < 0){                                           /*correct motorDrive if it is negative*/
-    motorDrive = 0;
+  if(newMotorDrive < 0){                                           /*correct motorDrive if it is negative*/
+    newMotorDrive = 0;
   }
-  if(motorDrive < motor10 && motorDrive > 0){                   /*correct for 10%. if calculated value is lower than 10% and greater than 1, set to 10%*/
-    motorDrive = motor10;
+  if(newMotorDrive > motor90){                                     /*correct for 90%. if calculated value is higher than 90%, set to 100%*/
+    newMotorDrive = 255;
   }
-  if(motorDrive > motor90){                                     /*correct for 90%. if calculated value is higher than 90%, set to 100%*/
-    motorDrive = 255;
-  }
+
+  if(motorDrive < motorRampMax){
+    /*if the new motor drive value is below motorRampMax and increasing, it needs to ramp slow*/
+    /*always allow the motor drive to decrease fast*/
+    if(newMotorDrive <= motorDrive){
+      motorDrive = newMotorDrive;
+    }
+    else{
+      motorDrive = motorDrive + rampRate;
+    }
+  }  
   DEBUG_PRINT("\t");
   DEBUG_PRINT(motorDrive);
   analogWrite(motorPin, motorDrive);                             /*write PWM drive value to motorPin*/
